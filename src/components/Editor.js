@@ -17,10 +17,10 @@ function ToolbarButton({ onClick, active, children, label }) {
       onClick={onClick}
       title={label}
       aria-label={label}
-      className={`px-2.5 py-1.5 rounded text-sm font-medium border ${
+      className={`px-3 py-2 rounded-lg text-sm font-semibold transition-all duration-200 ${
         active
-          ? "bg-slate-900 text-white border-slate-900"
-          : "bg-white text-slate-700 border-slate-200 hover:bg-slate-100"
+          ? "bg-indigo-100 text-indigo-700 shadow-sm"
+          : "bg-transparent text-slate-600 hover:bg-slate-100 hover:text-slate-900"
       }`}
     >
       {children}
@@ -41,7 +41,7 @@ export default function Editor({ user, doc, initialShares }) {
     extensions: [
       StarterKit,
       Underline,
-      Placeholder.configure({ placeholder: "Start writing…" }),
+      Placeholder.configure({ placeholder: "Start writing or type something amazing..." }),
     ],
     content: doc.content || "<p></p>",
     editable: canEdit,
@@ -91,93 +91,90 @@ export default function Editor({ user, doc, initialShares }) {
   if (!editor) return null;
 
   return (
-    <div className="flex-1 flex flex-col">
-      <header className="border-b border-slate-200 bg-white sticky top-0 z-10">
-        <div className="max-w-4xl mx-auto px-6 py-3 flex items-center gap-4">
-          <a href="/" className="text-sm text-slate-400 hover:text-slate-700">
-            ← Dashboard
-          </a>
-          <input
-            value={title}
-            onChange={onTitleChange}
-            disabled={!canEdit}
-            className="flex-1 text-lg font-semibold outline-none disabled:bg-transparent"
-          />
-          <span className="text-xs text-slate-400 w-16 text-right">
-            {status === "saving" && "Saving…"}
-            {status === "saved" && "Saved"}
-            {status === "error" && "Error saving"}
-          </span>
-          {doc.role === "owner" ? (
-            <button
-              onClick={() => setShareOpen(true)}
-              className="px-3 py-1.5 rounded-lg bg-slate-900 text-white text-sm font-medium hover:bg-slate-700"
-            >
-              Share
-            </button>
-          ) : (
-            <span className="text-xs uppercase tracking-wide text-slate-400 border border-slate-200 rounded px-2 py-1">
-              {doc.role} access
-            </span>
-          )}
+    <div className="flex-1 flex flex-col h-full bg-slate-50/50">
+      <header className="bg-white/80 backdrop-blur-xl border-b border-slate-200/60 sticky top-0 z-10 shadow-[0_1px_2px_0_rgba(0,0,0,0.03)]">
+        <div className="max-w-5xl mx-auto px-6 py-4 flex items-center justify-between gap-4">
+          <div className="flex items-center gap-4 flex-1">
+            <a href="/" className="group flex items-center justify-center w-10 h-10 rounded-full hover:bg-slate-100 transition-colors">
+              <svg className="w-5 h-5 text-slate-500 group-hover:text-slate-800 transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+              </svg>
+            </a>
+            <input
+              value={title}
+              onChange={onTitleChange}
+              disabled={!canEdit}
+              placeholder="Document Title"
+              className="flex-1 text-2xl font-bold text-slate-900 bg-transparent outline-none disabled:opacity-80 placeholder:text-slate-300 focus:ring-0"
+            />
+          </div>
+          <div className="flex items-center gap-4">
+            <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-slate-50 border border-slate-200 shadow-inner">
+              <span className="relative flex h-2 w-2">
+                {status === "saving" && <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-75"></span>}
+                <span className={`relative inline-flex rounded-full h-2 w-2 ${
+                  status === "saved" ? "bg-emerald-500" :
+                  status === "saving" ? "bg-amber-500" : "bg-red-500"
+                }`}></span>
+              </span>
+              <span className="text-xs font-semibold text-slate-600 uppercase tracking-wider">
+                {status === "saving" && "Saving"}
+                {status === "saved" && "Saved"}
+                {status === "error" && "Error"}
+              </span>
+            </div>
+            {doc.role === "owner" ? (
+              <button
+                onClick={() => setShareOpen(true)}
+                className="px-4 py-2 rounded-xl bg-indigo-600 text-white text-sm font-semibold hover:bg-indigo-700 hover:shadow-md hover:shadow-indigo-500/20 transition-all active:scale-95 flex items-center gap-2"
+              >
+                <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" />
+                </svg>
+                Share
+              </button>
+            ) : (
+              <span className="text-xs font-bold uppercase tracking-widest text-slate-500 border border-slate-200 bg-white rounded-lg px-3 py-2 shadow-sm">
+                {doc.role} access
+              </span>
+            )}
+          </div>
         </div>
         {canEdit && (
-          <div className="max-w-4xl mx-auto px-6 pb-3 flex flex-wrap gap-1.5">
-            <ToolbarButton
-              label="Bold"
-              active={editor.isActive("bold")}
-              onClick={() => editor.chain().focus().toggleBold().run()}
-            >
-              B
-            </ToolbarButton>
-            <ToolbarButton
-              label="Italic"
-              active={editor.isActive("italic")}
-              onClick={() => editor.chain().focus().toggleItalic().run()}
-            >
-              <span className="italic">I</span>
-            </ToolbarButton>
-            <ToolbarButton
-              label="Underline"
-              active={editor.isActive("underline")}
-              onClick={() => editor.chain().focus().toggleUnderline().run()}
-            >
-              <span className="underline">U</span>
-            </ToolbarButton>
-            <ToolbarButton
-              label="Heading 1"
-              active={editor.isActive("heading", { level: 1 })}
-              onClick={() => editor.chain().focus().toggleHeading({ level: 1 }).run()}
-            >
-              H1
-            </ToolbarButton>
-            <ToolbarButton
-              label="Heading 2"
-              active={editor.isActive("heading", { level: 2 })}
-              onClick={() => editor.chain().focus().toggleHeading({ level: 2 }).run()}
-            >
-              H2
-            </ToolbarButton>
-            <ToolbarButton
-              label="Bulleted list"
-              active={editor.isActive("bulletList")}
-              onClick={() => editor.chain().focus().toggleBulletList().run()}
-            >
-              • List
-            </ToolbarButton>
-            <ToolbarButton
-              label="Numbered list"
-              active={editor.isActive("orderedList")}
-              onClick={() => editor.chain().focus().toggleOrderedList().run()}
-            >
-              1. List
-            </ToolbarButton>
+          <div className="max-w-5xl mx-auto px-6 pb-4">
+            <div className="flex items-center gap-1 p-1 bg-slate-100/50 rounded-xl border border-slate-200/50 w-fit">
+              <ToolbarButton label="Bold" active={editor.isActive("bold")} onClick={() => editor.chain().focus().toggleBold().run()}>
+                <span className="font-bold">B</span>
+              </ToolbarButton>
+              <ToolbarButton label="Italic" active={editor.isActive("italic")} onClick={() => editor.chain().focus().toggleItalic().run()}>
+                <span className="italic font-serif">I</span>
+              </ToolbarButton>
+              <ToolbarButton label="Underline" active={editor.isActive("underline")} onClick={() => editor.chain().focus().toggleUnderline().run()}>
+                <span className="underline">U</span>
+              </ToolbarButton>
+              <div className="w-px h-6 bg-slate-200 mx-1"></div>
+              <ToolbarButton label="Heading 1" active={editor.isActive("heading", { level: 1 })} onClick={() => editor.chain().focus().toggleHeading({ level: 1 }).run()}>
+                H1
+              </ToolbarButton>
+              <ToolbarButton label="Heading 2" active={editor.isActive("heading", { level: 2 })} onClick={() => editor.chain().focus().toggleHeading({ level: 2 }).run()}>
+                H2
+              </ToolbarButton>
+              <div className="w-px h-6 bg-slate-200 mx-1"></div>
+              <ToolbarButton label="Bulleted list" active={editor.isActive("bulletList")} onClick={() => editor.chain().focus().toggleBulletList().run()}>
+                <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" /></svg>
+              </ToolbarButton>
+              <ToolbarButton label="Numbered list" active={editor.isActive("orderedList")} onClick={() => editor.chain().focus().toggleOrderedList().run()}>
+                <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 7h12M7 12h12M7 17h12M4 7v.01M4 12v.01M4 17v.01" /></svg>
+              </ToolbarButton>
+            </div>
           </div>
         )}
       </header>
 
-      <main className="max-w-4xl mx-auto w-full px-6 py-6 flex-1">
-        <EditorContent editor={editor} />
+      <main className="max-w-4xl mx-auto w-full px-6 py-12 flex-1">
+        <div className="bg-white rounded-2xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-slate-100 p-8 md:p-12 min-h-full">
+          <EditorContent editor={editor} className="prose prose-slate prose-lg max-w-none focus:outline-none" />
+        </div>
       </main>
 
       {shareOpen && (
