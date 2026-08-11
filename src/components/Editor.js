@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 import { useEditor, EditorContent } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
 import Underline from "@tiptap/extension-underline";
@@ -57,6 +58,11 @@ export default function Editor({ user, doc, initialShares }) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [canEdit]);
 
+  const saveRef = useRef(save);
+  useEffect(() => {
+    saveRef.current = save;
+  }, [save]);
+
   async function save(overrides = {}) {
     if (!canEdit) return;
     const content = overrides.content ?? editor?.getHTML();
@@ -66,6 +72,7 @@ export default function Editor({ user, doc, initialShares }) {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ title: nextTitle, content }),
+        keepalive: true,
       });
       if (!res.ok) throw new Error("save failed");
       setStatus("saved");
@@ -84,7 +91,10 @@ export default function Editor({ user, doc, initialShares }) {
   // Flush pending save on unmount / navigation away.
   useEffect(() => {
     return () => {
-      if (saveTimer.current) clearTimeout(saveTimer.current);
+      if (saveTimer.current) {
+        clearTimeout(saveTimer.current);
+        saveRef.current();
+      }
     };
   }, []);
 
@@ -95,11 +105,11 @@ export default function Editor({ user, doc, initialShares }) {
       <header className="bg-white/80 backdrop-blur-xl border-b border-slate-200/60 sticky top-0 z-10 shadow-[0_1px_2px_0_rgba(0,0,0,0.03)]">
         <div className="max-w-5xl mx-auto px-6 py-4 flex items-center justify-between gap-4">
           <div className="flex items-center gap-4 flex-1">
-            <a href="/" className="group flex items-center justify-center w-10 h-10 rounded-full hover:bg-slate-100 transition-colors">
+            <Link href="/" className="group flex items-center justify-center w-10 h-10 rounded-full hover:bg-slate-100 transition-colors">
               <svg className="w-5 h-5 text-slate-500 group-hover:text-slate-800 transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
               </svg>
-            </a>
+            </Link>
             <input
               value={title}
               onChange={onTitleChange}

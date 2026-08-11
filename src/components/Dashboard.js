@@ -2,6 +2,7 @@
 
 import { useRef, useState } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 
 function formatDate(iso) {
   return new Date(iso).toLocaleString(undefined, {
@@ -157,7 +158,7 @@ export default function Dashboard({ user, owned, shared }) {
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
               {owned.map((d) => (
-                <a
+                <Link
                   key={d.id}
                   href={`/doc/${d.id}`}
                   className="group block p-5 rounded-2xl bg-white border border-slate-200 shadow-sm hover:shadow-md hover:border-indigo-200 hover:-translate-y-1 transition-all duration-300"
@@ -169,7 +170,7 @@ export default function Dashboard({ user, owned, shared }) {
                       <p className="text-xs text-slate-500 mt-1 font-medium">Updated {formatDate(d.updated_at)}</p>
                     </div>
                   </div>
-                </a>
+                </Link>
               ))}
             </div>
           )}
@@ -188,7 +189,7 @@ export default function Dashboard({ user, owned, shared }) {
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
               {shared.map((d) => (
-                <a
+                <Link
                   key={d.id}
                   href={`/doc/${d.id}`}
                   className="group block p-5 rounded-2xl bg-white border border-slate-200 shadow-sm hover:shadow-md hover:border-purple-200 hover:-translate-y-1 transition-all duration-300 relative overflow-hidden"
@@ -209,7 +210,7 @@ export default function Dashboard({ user, owned, shared }) {
                       </div>
                     </div>
                   </div>
-                </a>
+                </Link>
               ))}
             </div>
           )}
