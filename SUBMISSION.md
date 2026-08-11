@@ -4,8 +4,7 @@
 
 - `src/` — full application source (Next.js App Router, API routes,
   components, data-access layer, tests)
-- `data/` — created automatically on first run (not checked in; see
-  `.gitignore`); holds the SQLite database file
+- `.env` / `.env.example` — environment variables for connecting to the PostgreSQL database
 - `README.md` — setup, run, test, and deploy instructions; seeded demo
   accounts; what's working vs. incomplete
 - `ARCHITECTURE.md` — scope decisions and why, data model, what would
@@ -17,10 +16,7 @@
 
 ## Not included / still needed before final review
 
-- **Live deployment URL**: not deployed from this environment (no outbound
-  access to hosting providers). See README.md "Deploying" section for exact
-  steps (Vercel in ~2 minutes, or Render/Railway for persistent SQLite
-  storage) — either gets a live URL a reviewer can test directly.
+- **Live deployment URL**: Done! The application is deployed to Vercel and connected to a production Supabase PostgreSQL instance. You can test it here: https://ajaia-assignment-drab.vercel.app
 - **Walkthrough video**: not recorded from this environment. The app is
   fully runnable locally (`npm install && npm run dev`) for recording a
   walkthrough covering: login as a seeded user → create/upload a document →
@@ -28,7 +24,7 @@
   → log in as that user to see it under "Shared with you" → confirm
   permission enforcement (a third, unshared user gets no access).
 - **Google Drive folder**: this is local source; upload the folder contents
-  (excluding `node_modules/` and `data/`) to Drive as part of final
+  (excluding `node_modules/` and `.env`) to Drive as part of final
   submission packaging.
 
 ## Status of core requirements
@@ -39,10 +35,10 @@
 | Rich text (bold/italic/underline/headings/lists) | Done |
 | File upload (.txt/.md/.docx -> new document) | Done, verified with valid and invalid file types |
 | Sharing (owner, grant access, owned vs shared distinction) | Done, verified with automated tests + manual curl walkthrough |
-| Persistence (SQLite, survives refresh/restart) | Done |
+| Persistence (PostgreSQL via Supabase) | Done |
 | README with setup/run instructions | Done (this folder) |
 | Architecture note | Done (`ARCHITECTURE.md`) |
 | AI workflow note | Done (`AI_WORKFLOW.md`) |
 | At least one automated test | Done — 6 tests in `src/lib/__tests__/documents.test.js`, all passing |
-| Live deployment link | **Outstanding** — see README for 2-minute deploy path |
+| Live deployment link | Done — https://ajaia-assignment-drab.vercel.app |
 | Walkthrough video | **Outstanding** — needs to be recorded against a running instance |

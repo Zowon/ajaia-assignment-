@@ -7,7 +7,8 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "test": "vitest run"
+    "test": "vitest run",
+    "migrate": "node scripts/migrate.js"
   },
   "dependencies": {
     "@tiptap/extension-placeholder": "^3.30.0",
